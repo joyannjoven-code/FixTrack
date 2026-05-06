@@ -47,7 +47,11 @@ void addRequest() {
     
     while (1) {
         printf("Enter ID: ");
-        scanf("%d", &newRequest->id);
+        if (scanf("%d", &newRequest->id) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            clearBuffer();
+            continue;
+        }
         clearBuffer();
 
         struct Request *check = head;
@@ -65,16 +69,27 @@ void addRequest() {
     }
 
     printf("Enter Equipment Name: ");
-    fgets(newRequest->equip, sizeof(newRequest->equip), stdin);
+    if (fgets(newRequest->equip, sizeof(newRequest->equip), stdin) == NULL) {
+        printf("Input error!\n");
+        return;
+    }
     newRequest->equip[strcspn(newRequest->equip, "\n")] = '\0';
     
-    printf("Enter Issue Description: ");
-    fgets(newRequest->issue, sizeof(newRequest->issue), stdin);
-    newRequest->issue[strcspn(newRequest->issue, "\n")] = '\0';
+   printf("Enter Issue Description: ");
+   if (fgets(newRequest->issue, sizeof(newRequest->issue), stdin) == NULL) {
+    printf("Input error!\n");
+    return;
+}
+
+newRequest->issue[strcspn(newRequest->issue, "\n")] = '\0';
 
         while (1) {
         printf("Enter Priority Level (1-High, 2-Medium, 3-Low): ");
-        scanf("%d", &newRequest->priority);
+        if (scanf("%d", &newRequest->priority) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            clearBuffer();
+            continue;
+        }
         clearBuffer();
         if (newRequest->priority >= 1 && newRequest->priority <= 3) break;
         printf("Invalid priority! Try again.\n");
@@ -101,16 +116,22 @@ void viewRequests() {
         return;
     }
     printf("------------------------------------------------------------------------------\n");
-    printf("| %-5s | %-10s | %-20s | %-30s |\n", "ID", "Priority", "Equipment", "Description");
+    printf("| %-5s | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
     printf("------------------------------------------------------------------------------\n");
       while (temp != NULL) {
         char *p;
-        if (temp->priority == 1) p = "High";
-        else if (temp->priority == 2) p = "Medium";
-        else p = "Low";
-
-        printf("| %-5d | %-10s | %-20s | %-30s |\n",
-               temp->id, p, temp->equip, temp->issue);
+        if (temp->priority == 1) {
+            p = "High";
+        }
+        else if (temp->priority == 2) {
+            p = "Medium";
+        }
+        else {
+            p = "Low";
+        }
+        
+        printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n",
+       temp->id, p, temp->equip, temp->issue);
 
         printf("------------------------------------------------------------------------------\n");
         temp = temp->next;
@@ -120,7 +141,11 @@ void viewRequests() {
 void updateRequest() {
     int id;
    printf("Enter ID to update: ");
-    scanf("%d", &id);
+    if (scanf("%d", &id) != 1) {
+        printf("Invalid input. Please enter a number.\n");
+        clearBuffer();
+        return;
+    }
     clearBuffer();
 
     struct Request *temp = head;
@@ -137,7 +162,11 @@ void updateRequest() {
 
             while (1) {
                 printf("Enter new Priority (1-High, 2-Medium, 3-Low): ");
-                scanf("%d", &temp->priority);
+                if (scanf("%d", &temp->priority) != 1) {
+                    printf("Invalid input. Please enter a number.\n");
+                    clearBuffer();
+                    continue;
+                }
                 clearBuffer();
                 if (temp->priority >= 1 && temp->priority <= 3) break;
                 printf("Invalid priority!\n");
@@ -156,16 +185,30 @@ void updateRequest() {
 void searchRequest() {
     int id;
     printf("Enter ID to search: ");
-    scanf("%d", &id);
+    if (scanf("%d", &id) != 1) {
+        printf("Invalid input. Please enter a number.\n");
+        clearBuffer();
+        return;
+    }
     clearBuffer();
 
     struct Request *temp = head;
     while (temp != NULL) {
         if (temp->id == id) {
              printf("------------------------------------------------------------------------------\n");
-            printf("| %-5s | %-10s | %-20s | %-30s |\n", "ID", "Priority", "Equipment", "Description");
+            printf("| %-5s | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
              printf("------------------------------------------------------------------------------\n");
-            printf("| %-5d | %-10d | %-20s | %-30s |\n", temp->id, temp->priority, temp->equip, temp->issue);
+            char *p;
+            if (temp->priority == 1) {
+                p = "High";
+            }
+            else if (temp->priority == 2) {
+                p = "Medium";
+            }
+            else {
+                p = "Low";
+            }
+            printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n",temp->id, p, temp->equip, temp->issue);
              printf("------------------------------------------------------------------------------\n");
             return;
         }
@@ -217,7 +260,11 @@ void processRequest() {
 void deleteRequest() {
     int id;
     printf("Enter ID to delete: ");
-    scanf("%d", &id);
+    if (scanf("%d", &id) != 1) {
+        printf("Invalid input. Please enter a number.\n");
+        clearBuffer();
+        return;
+    }
     clearBuffer();
     struct Request *temp = head, *prev = NULL;
        while (temp != NULL) {
@@ -295,7 +342,11 @@ int main() {
         printf("9. Exit\n");
         printf("==============================================================================\n");
         printf("Enter your choice: ");
-        scanf("%d", &choice);
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            clearBuffer();
+            continue;
+        }
         clearBuffer();
 
         switch(choice) {
