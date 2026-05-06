@@ -27,23 +27,28 @@ void clearBuffer() {
 
 void logHistory(char *action, struct Request *r) {
     if (historyCount < MAX_HISTORY) {
-        sprintf(history[historyCount],
-            "[%s] ID:%d | %s | Priority:%d",
-            action,
-             r->id,
-             r->equip,
-             r->priority);
+       snprintf(history[historyCount], 100,
+        "[%s] ID:%d | %s | Priority:%d",
+        action,
+        r->id,
+        r->equip,
+        r->priority);
         historyCount++;
     }
 }
 
 void addRequest() {
     struct Request *newRequest = (struct Request*)malloc(sizeof(struct Request));
-    int ch;
+
+    if (newRequest == NULL) {
+        printf("Memory allocation failed!\n");
+        return;
+    }
     
     while (1) {
         printf("Enter ID: ");
         scanf("%d", &newRequest->id);
+        clearBuffer();
 
         struct Request *check = head;
         int duplicate = 0;
@@ -59,24 +64,21 @@ void addRequest() {
         printf("ID already exists! Try again.\n");
     }
 
-     clearBuffer();
-
     printf("Enter Equipment Name: ");
     fgets(newRequest->equip, sizeof(newRequest->equip), stdin);
-    if (newRequest->equip[strlen(newRequest->equip) - 1] == '\n')
-        newRequest->equip[strlen(newRequest->equip) - 1] = '\0';
+    newRequest->equip[strcspn(newRequest->equip, "\n")] = '\0';
+    
     printf("Enter Issue Description: ");
     fgets(newRequest->issue, sizeof(newRequest->issue), stdin);
-    if (newRequest->issue[strlen(newRequest->issue) - 1] == '\n')
-        newRequest->issue[strlen(newRequest->issue) - 1] = '\0';
+    newRequest->issue[strcspn(newRequest->issue, "\n")] = '\0';
 
-         while (1) {
+        while (1) {
         printf("Enter Priority Level (1-High, 2-Medium, 3-Low): ");
         scanf("%d", &newRequest->priority);
+        clearBuffer();
         if (newRequest->priority >= 1 && newRequest->priority <= 3) break;
         printf("Invalid priority! Try again.\n");
     }
-
     newRequest->next = NULL;
 
     if (head == NULL) {
@@ -116,26 +118,27 @@ void viewRequests() {
 }
 
 void updateRequest() {
-    int id, ch;
+    int id;
    printf("Enter ID to update: ");
     scanf("%d", &id);
+    clearBuffer();
 
     struct Request *temp = head;
     while (temp != NULL) {
         if (temp->id == id) {
-            clearBuffer();
             
             printf("Enter new Equipment Name: ");
             fgets(temp->equip, sizeof(temp->equip), stdin);
-            if (temp->equip[strlen(temp->equip) - 1] == '\n')
-                temp->equip[strlen(temp->equip) - 1] = '\0';
+            temp->equip[strcspn(temp->equip, "\n")] = '\0';
+            
             printf("Enter new Issue Description: ");
             fgets(temp->issue, sizeof(temp->issue), stdin);
-            if (temp->issue[strlen(temp->issue) - 1] == '\n')
-                temp->issue[strlen(temp->issue) - 1] = '\0';
+            temp->issue[strcspn(temp->issue, "\n")] = '\0';
+
             while (1) {
                 printf("Enter new Priority (1-High, 2-Medium, 3-Low): ");
                 scanf("%d", &temp->priority);
+                clearBuffer();
                 if (temp->priority >= 1 && temp->priority <= 3) break;
                 printf("Invalid priority!\n");
             }
@@ -150,12 +153,12 @@ void updateRequest() {
     printf("\nRequest not found.\n");
 }
 
-
-
 void searchRequest() {
     int id;
     printf("Enter ID to search: ");
     scanf("%d", &id);
+    clearBuffer();
+
     struct Request *temp = head;
     while (temp != NULL) {
         if (temp->id == id) {
@@ -211,12 +214,11 @@ void processRequest() {
     printf("\nProcessed request ID %d (Highest Priority)\n", highest->id);
 }
 
-
 void deleteRequest() {
     int id;
     printf("Enter ID to delete: ");
     scanf("%d", &id);
-
+    clearBuffer();
     struct Request *temp = head, *prev = NULL;
        while (temp != NULL) {
         if (temp->id == id) {
@@ -249,7 +251,7 @@ void viewCompleted() {
 
     printf("\n==============================================================================\n");
     printf("                             COMPLETED REQUESTS                                 \n");
-    printf("================================================================================\n");
+    printf("==============================================================================\n");
     while (temp != NULL) {
         printf("ID: %d | %s | Priority: %d\n",
                temp->id, temp->equip, temp->priority);
@@ -266,11 +268,11 @@ void viewHistory() {
 
     printf("\n==============================================================================\n");
     printf("                               VIEW HISTORY                                     \n");
-    printf("================================================================================\n");
+    printf("==============================================================================\n");
 
     for (int i = 0; i < historyCount; i++) {
         printf("%s\n", history[i]);
-        printf("============================================================================\n");
+        printf("==============================================================================\n");
     }
 }
 
@@ -294,6 +296,7 @@ int main() {
         printf("==============================================================================\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
+        clearBuffer();
 
         switch(choice) {
             case 1: addRequest();
