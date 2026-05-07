@@ -4,27 +4,33 @@
 
 #define MAX_HISTORY 100
 
+// Structure to represent a maintenance request
 struct Request {
-    int id;
-    int priority;
-    char equip[50];
-    char issue[100];
-    struct Request *next;
+    int id;              // Unique identifier for the request
+    int priority;        // Priority level: 1-High, 2-Medium, 3-Low
+    char equip[50];      // Equipment name
+    char issue[100];     // Description of the issue
+    struct Request *next; // Pointer to the next request in the list
 };
 
+// Global pointers for the pending requests linked list
 struct Request *head = NULL;
 
+// Global pointers for the completed requests queue
 struct Request *comFront = NULL;
 struct Request *comRear = NULL;
 
+// Array to store history of actions
 char history[MAX_HISTORY][100];
 int historyCount = 0;
 
+// Function to clear the input buffer
 void clearBuffer() {
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);
 }
 
+// Function to log actions in the history array
 void logHistory(char *action, struct Request *r) {
     if (historyCount < MAX_HISTORY) {
        snprintf(history[historyCount], 100,
@@ -37,6 +43,8 @@ void logHistory(char *action, struct Request *r) {
     }
 }
 
+// Function to add a new maintenance request
+// Uses Linked List: Allocates new node and appends to the end of the pending requests list
 void addRequest() {
     struct Request *newRequest = (struct Request*)malloc(sizeof(struct Request));
 
@@ -56,6 +64,7 @@ void addRequest() {
 
         struct Request *check = head;
         int duplicate = 0;
+        // Check for duplicate ID
         while (check != NULL) {
             if (check->id == newRequest->id) {
                 duplicate = 1;
@@ -109,6 +118,8 @@ newRequest->issue[strcspn(newRequest->issue, "\n")] = '\0';
 }
 
 
+// Function to display all pending requests in a table format
+// Uses Linked List: Traverses the list and prints each node's data in a formatted table
 void viewRequests() {
     struct Request *temp = head;
     if (temp == NULL) {
@@ -138,6 +149,8 @@ void viewRequests() {
     }
 }
 
+// Function to update an existing request by ID
+// Uses Linked List: Traverses the list to find the node with matching ID and updates its fields
 void updateRequest() {
     int id;
    printf("Enter ID to update: ");
@@ -182,6 +195,8 @@ void updateRequest() {
     printf("\nRequest not found.\n");
 }
 
+// Function to search and display a request by ID
+// Uses Linked List: Linear search through the list to find the node with matching ID
 void searchRequest() {
     int id;
     printf("Enter ID to search: ");
@@ -217,6 +232,9 @@ void searchRequest() {
     printf("\nRequest with ID %d not found.\n", id);
 }
 
+// Function to process the highest priority request and move it to completed queue
+// Uses Linked List and Queue: Linear search in linked list to find node with lowest priority number,
+// removes it from list, and enqueues it to the completed requests queue
 void processRequest() {
     if (head == NULL) {
         printf("\nNo requests to process.\n");
@@ -226,6 +244,7 @@ void processRequest() {
     struct Request *temp = head;
     struct Request *prev = NULL;
 
+    // Find the request with the highest priority (lowest number)
     struct Request *highest = head;
     struct Request *highestPrev = NULL;
 
@@ -257,6 +276,8 @@ void processRequest() {
     printf("\nProcessed request ID %d (Highest Priority)\n", highest->id);
 }
 
+// Function to delete a request by ID
+// Uses Linked List: Traverses the list to find and remove the node with matching ID
 void deleteRequest() {
     int id;
     printf("Enter ID to delete: ");
@@ -289,6 +310,8 @@ void deleteRequest() {
     printf("\nRequest not found.\n");
 }
 
+// Function to display all completed requests
+// Uses Queue: Traverses the completed requests queue from front to rear
 void viewCompleted() {
     struct Request *temp = comFront;
     if (temp == NULL) {
@@ -307,6 +330,8 @@ void viewCompleted() {
     }
 }
 
+// Function to display the history of actions
+// Uses Array: Iterates through the history array to display logged actions
 void viewHistory() {
     if (historyCount == 0) {
         printf("\nNo history available.\n");
@@ -324,6 +349,7 @@ void viewHistory() {
 }
 
 
+// Main function: displays menu and handles user choices
 int main() {
     int choice;
 
@@ -348,7 +374,6 @@ int main() {
             continue;
         }
         clearBuffer();
-
         switch(choice) {
             case 1: addRequest();
                 break;
