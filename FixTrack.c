@@ -33,12 +33,12 @@ void clearBuffer() {
 // Function to log actions in the history array
 void logHistory(char *action, struct Request *r) {
     if (historyCount < MAX_HISTORY) {
-       snprintf(history[historyCount], 100,
-        "[%s] ID:%d | %s | Priority:%d",
-        action,
-        r->id,
-        r->equip,
-        r->priority);
+        snprintf(history[historyCount], 100,
+            "[%s] ID:%d | %s | Priority:%d",
+            action,
+            r->id,
+            r->equip,
+            r->priority);
         historyCount++;
     }
 }
@@ -64,13 +64,24 @@ void addRequest() {
 
         struct Request *check = head;
         int duplicate = 0;
-        // Check for duplicate ID
+        // Check for duplicate ID in pending requests
         while (check != NULL) {
             if (check->id == newRequest->id) {
                 duplicate = 1;
                 break;
             }
             check = check->next;
+        }
+        // Check for duplicate ID in completed requests
+        if (!duplicate) {
+            check = comFront;
+            while (check != NULL) {
+                if (check->id == newRequest->id) {
+                    duplicate = 1;
+                    break;
+                }
+                check = check->next;
+            }
         }
 
         if (!duplicate) break;
@@ -109,7 +120,9 @@ newRequest->issue[strcspn(newRequest->issue, "\n")] = '\0';
         head = newRequest;
     } else {
         struct Request *temp = head;
-        while (temp->next != NULL) temp = temp->next;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
         temp->next = newRequest;
     }
 
@@ -127,7 +140,7 @@ void viewRequests() {
         return;
     }
     printf("------------------------------------------------------------------------------\n");
-    printf("| %-5s | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
+    printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
     printf("------------------------------------------------------------------------------\n");
       while (temp != NULL) {
         char *p;
@@ -153,7 +166,7 @@ void viewRequests() {
 // Uses Linked List: Traverses the list to find the node with matching ID and updates its fields
 void updateRequest() {
     int id;
-   printf("Enter ID to update: ");
+    printf("Enter ID to update: ");
     if (scanf("%d", &id) != 1) {
         printf("Invalid input. Please enter a number.\n");
         clearBuffer();
@@ -166,11 +179,17 @@ void updateRequest() {
         if (temp->id == id) {
             
             printf("Enter new Equipment Name: ");
-            fgets(temp->equip, sizeof(temp->equip), stdin);
+            if (fgets(temp->equip, sizeof(temp->equip), stdin) == NULL) {
+                printf("Input error!\n");
+                return;
+            }
             temp->equip[strcspn(temp->equip, "\n")] = '\0';
             
             printf("Enter new Issue Description: ");
-            fgets(temp->issue, sizeof(temp->issue), stdin);
+            if (fgets(temp->issue, sizeof(temp->issue), stdin) == NULL) {
+                printf("Input error!\n");
+                return;
+            }
             temp->issue[strcspn(temp->issue, "\n")] = '\0';
 
             while (1) {
@@ -223,8 +242,8 @@ void searchRequest() {
             else {
                 p = "Low";
             }
-            printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n",temp->id, p, temp->equip, temp->issue);
-             printf("------------------------------------------------------------------------------\n");
+            printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n", temp->id, p, temp->equip, temp->issue);
+            printf("------------------------------------------------------------------------------\n");
             return;
         }
         temp = temp->next;
@@ -322,10 +341,22 @@ void viewCompleted() {
     printf("\n==============================================================================\n");
     printf("                             COMPLETED REQUESTS                                 \n");
     printf("==============================================================================\n");
+    printf("| %-5s | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
+    printf("------------------------------------------------------------------------------\n");
     while (temp != NULL) {
-        printf("ID: %d | %s | Priority: %d\n",
-               temp->id, temp->equip, temp->priority);
-               printf("==============================================================================\n");    
+        char *p;
+        if (temp->priority == 1) {
+            p = "High";
+        }
+        else if (temp->priority == 2) {
+            p = "Medium";
+        }
+        else {
+            p = "Low";
+        }
+        printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n",
+            temp->id, p, temp->equip, temp->issue);
+        printf("------------------------------------------------------------------------------\n");
         temp = temp->next;
     }
 }
