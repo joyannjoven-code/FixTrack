@@ -140,7 +140,7 @@ void viewRequests() {
         return;
     }
     printf("------------------------------------------------------------------------------\n");
-    printf("| %-5d | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
+    printf("| %-5s | %-10s | %-20.20s | %-30.30s |\n", "ID", "Priority", "Equipment", "Description");
     printf("------------------------------------------------------------------------------\n");
       while (temp != NULL) {
         char *p;
